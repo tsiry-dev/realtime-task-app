@@ -42,7 +42,7 @@ class SendMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'email.email-verification.blade.php',
+            view: 'email.email-verification',
             with: ['user' => $this->user]
         );
     }

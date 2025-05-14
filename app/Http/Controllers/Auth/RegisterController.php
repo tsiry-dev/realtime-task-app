@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Events\NewUserCreated;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -21,15 +22,17 @@ class RegisterController extends Controller
          ]);
 
          if($errors->fails()) {
-            return response($errors->errors()->all(),422);
+            return response($errors->errors()->toArray(),422);
          }
 
-         User::create([
+         $user = User::create([
             'email' => $fields['email'],
             'password' => Hash::make($fields['password']),
             'emailIsValid' => User::IS_INVALID_EMAIL,
             'remember_token' => $this->generateRandomToken()
          ]);
+
+         NewUserCreated::dispatch($user);
 
          return response(['message' => 'user created'],200);
     }
