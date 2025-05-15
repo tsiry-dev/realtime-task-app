@@ -17,7 +17,7 @@ class RegisterController extends Controller
          $fields = $request->all();
 
          $errors = Validator::make($fields,[
-            'email' => 'required|email|max:255|unique:users',
+            'email' => 'required|email|max:255|unique:users,email',
             'password' => 'required|string|min:8|confirmed',
          ]);
 
@@ -34,7 +34,15 @@ class RegisterController extends Controller
 
          NewUserCreated::dispatch($user);
 
-         return response(['message' => 'user created'],200);
+         return response(['user' => $user,'message' => 'user created'],200);
+    }
+
+    public function checkEmail(string $token)
+    {
+        User::where('remember_token', $token)
+             ->update(['emailIsValid' => User::IS_VALID_EMAIL]);
+
+        return redirect('/login');
     }
 
     public function generateRandomToken()
